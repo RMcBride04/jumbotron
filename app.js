@@ -60,6 +60,7 @@
     grid: document.getElementById('grid'),
     stats: document.getElementById('stats'),
     alert: document.getElementById('alert'),
+    fsButton: document.getElementById('fsButton'),
     section: document.getElementById('section'),
     pageCount: document.getElementById('pageCount'),
     status: document.getElementById('status'),
@@ -615,6 +616,85 @@
     var healthy = navigator.onLine && Date.now() - lastSuccess < STALE_MS;
     if (healthy && Date.now() - startedAt > RELOAD_AFTER_MS) window.location.reload();
   }
+
+  // ----- Full-screen button for the TV remote -----
+  var CENTER_KEY_CODES = [13, 23];   // Enter, and the Android remote's center button
+  var ARROW_KEY_CODES = [19, 20, 21, 22, 37, 38, 39, 40];
+  var fullscreenFailed = false;
+
+  function canGoFullscreen() {
+    var root = document.documentElement;
+    return !!(root.requestFullscreen || root.webkitRequestFullscreen) &&
+      document.fullscreenEnabled !== false && document.webkitFullscreenEnabled !== false;
+  }
+
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  }
+
+  function buttonIsShowing() {
+    return els.fsButton.style.display !== 'none';
+  }
+
+  function updateFullscreenButton() {
+    var show = canGoFullscreen() && !isFullscreen() && !fullscreenFailed;
+    els.fsButton.style.display = show ? '' : 'none';
+    if (show) els.fsButton.focus();
+  }
+
+  function enterFullscreen() {
+    var root = document.documentElement;
+    var request = root.requestFullscreen || root.webkitRequestFullscreen;
+    var result = request.call(root);
+    // If the browser refuses, get the button out of the way of the scores.
+    if (result && result.catch) {
+      result.catch(function () {
+        fullscreenFailed = true;
+        updateFullscreenButton();
+      });
+    }
+    keepAwake();
+  }
+
+  function onRemoteKey(event) {
+    if (!buttonIsShowing() || event.repeat) return;
+    if (event.key === 'Select' || event.key === 'Enter' || CENTER_KEY_CODES.indexOf(event.keyCode) !== -1) {
+      event.preventDefault();   // stops the same press from also counting as a click
+      enterFullscreen();
+    } else if (ARROW_KEY_CODES.indexOf(event.keyCode) !== -1) {
+      event.preventDefault();
+      els.fsButton.focus();
+    }
+  }
+
+  // ----- Keep the screen awake while the page is open, if the browser allows it -----
+  var wakeLock = null;
+  var wakeLockPending = false;
+
+  function keepAwake() {
+    if (!navigator.wakeLock || wakeLock || wakeLockPending || document.visibilityState !== 'visible') return;
+    wakeLockPending = true;
+    navigator.wakeLock.request('screen').then(function (lock) {
+      wakeLock = lock;
+      wakeLockPending = false;
+      lock.addEventListener('release', function () { wakeLock = null; });
+    }).catch(function () {
+      wakeLockPending = false;   // not allowed right now; the regular retry below tries again
+    });
+  }
+
+  els.fsButton.addEventListener('click', enterFullscreen);
+  document.addEventListener('keydown', onRemoteKey);
+  ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (name) {
+    document.addEventListener(name, function () {
+      updateFullscreenButton();
+      keepAwake();
+    });
+  });
+  document.addEventListener('visibilitychange', keepAwake);
+  setInterval(keepAwake, 60000);
+  updateFullscreenButton();
+  keepAwake();
 
   tickClock();
   drawPage();

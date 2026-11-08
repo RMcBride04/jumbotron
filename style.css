@@ -144,6 +144,36 @@ body {
 .stat-value { flex: none; margin-left: 0.8vw; font-weight: 700; color: var(--accent); }
 .stat-empty { margin-top: 0.35vh; font-size: 1.3vw; color: var(--muted); }
 
+/* ----- Full-screen button, made to be used with a TV remote ----- */
+.fs-button {
+  position: fixed;
+  z-index: 6;
+  top: 50%;
+  left: 50%;
+  padding: 3vh 5vw;
+  font-family: inherit;
+  font-size: 3.6vw;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #07090f;
+  background: var(--accent);
+  border: 0;
+  border-radius: 1.2vw;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+.fs-button:focus {
+  outline: 0.6vw solid #fff;
+  outline-offset: 0.3vw;
+}
+.fs-hint {
+  display: block;
+  margin-top: 0.6vh;
+  font-size: 1.6vw;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
 /* ----- Touchdown and red-zone banner ----- */
 .alert {
   position: fixed;

@@ -1,0 +1,32 @@
+# Secrets: these must never be uploaded to GitHub.
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+secrets.*
+secret.*
+credentials.*
+cookies.*
+cookies.txt
+
+# Local settings that only apply to this PC.
+.claude/settings.local.json
+local.properties
+config.local.*
+*.local.json
+
+# Editor and Windows clutter.
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+
+# Built or downloaded files.
+node_modules/
+build/
+*.apk
+*.aab
+*.log
