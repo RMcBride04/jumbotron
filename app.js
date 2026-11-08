@@ -623,6 +623,7 @@
   var fullscreenFailed = false;
 
   function canGoFullscreen() {
+    if (/[?&]app=1/.test(window.location.search)) return false;   // the Fire TV app is already full screen
     var root = document.documentElement;
     return !!(root.requestFullscreen || root.webkitRequestFullscreen) &&
       document.fullscreenEnabled !== false && document.webkitFullscreenEnabled !== false;

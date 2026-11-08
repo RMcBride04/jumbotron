@@ -1,0 +1,16 @@
+plugins {
+    id 'com.android.application' version '8.7.3'
+}
+
+android {
+    namespace 'io.github.rmcbride04.jumbotron'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'io.github.rmcbride04.jumbotron'
+        minSdk 22
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+}

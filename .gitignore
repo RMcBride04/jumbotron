@@ -27,6 +27,7 @@ Desktop.ini
 # Built or downloaded files.
 node_modules/
 build/
+.gradle/
 *.apk
 *.aab
 *.log
