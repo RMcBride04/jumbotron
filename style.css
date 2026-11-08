@@ -1,0 +1,386 @@
+/* Sizes use vw/vh (percent of the screen) so the page fits any TV resolution. */
+:root {
+  --bg: #07090f;
+  --card: #141a26;
+  --card-line: #263044;
+  --text: #f4f6fb;
+  --muted: #9aa6bb;
+  --accent: #ffc53d;
+  --live: #ff3b47;
+  --nfl: #5aa2ff;
+  --nba: #ff9142;
+  --mlb: #4fd18b;
+  --ncaaf: #ffd257;
+  --ncaab: #c79bff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Roboto Condensed", Roboto, "Segoe UI", Arial, sans-serif;
+  cursor: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  /* Some TVs crop the screen edges, so nothing important sits right at the edge. */
+  padding: 2vh 2vw 0;
+}
+
+/* ----- Top bar ----- */
+.top {
+  display: flex;
+  align-items: center;
+  height: 8vh;
+  flex: none;
+}
+.brand {
+  font-size: 2.3vw;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+.section {
+  margin-left: 3vw;
+  font-size: 2.1vw;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.section.live { color: var(--live); }
+.page-count {
+  margin-left: 1.2vw;
+  font-size: 1.5vw;
+  color: var(--muted);
+}
+.status {
+  margin-left: auto;
+  font-size: 1.4vw;
+  color: var(--accent);
+}
+.clock {
+  margin-left: 2vw;
+  font-size: 2.4vw;
+  font-weight: 700;
+}
+
+/* ----- Game cards ----- */
+.stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  padding: 0.6vh 0 1.6vh;
+}
+.grid {
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-gap: 1.2vw;
+}
+
+/* ----- Player stats panel ----- */
+.stats {
+  flex: 0 0 37vw;
+  margin-left: 1.2vw;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto repeat(4, minmax(0, 1fr));
+  padding: 0.8vh 1.2vw;
+  background: var(--card);
+  border: 0.12vw solid var(--card-line);
+  border-radius: 0.8vw;
+}
+.stage.full .stats { display: none; }
+.stats-title {
+  padding-bottom: 0.6vh;
+  font-size: 1.5vw;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+.stat-game {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top: 0.1vw solid var(--card-line);
+}
+.stat-head {
+  display: flex;
+  align-items: center;
+  font-size: 1.45vw;
+  font-weight: 700;
+}
+.stat-head .tag { margin-right: 0.7vw; font-size: 1.05vw; }
+.stat-row {
+  display: flex;
+  align-items: baseline;
+  margin-top: 0.35vh;
+  font-size: 1.4vw;
+}
+.stat-label {
+  flex: none;
+  width: 3.8vw;
+  font-size: 1.15vw;
+  font-weight: 800;
+  color: var(--muted);
+}
+.stat-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+.stat-name em { margin-left: 0.4vw; font-style: normal; font-size: 1.1vw; color: var(--muted); }
+.stat-value { flex: none; margin-left: 0.8vw; font-weight: 700; color: var(--accent); }
+.stat-empty { margin-top: 0.35vh; font-size: 1.3vw; color: var(--muted); }
+
+/* ----- Touchdown and red-zone banner ----- */
+.alert {
+  position: fixed;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 11vh;
+  display: flex;
+  align-items: center;
+  padding: 0 3vw;
+  color: #fff;
+  background: var(--live);
+  transform: translate3d(0, -110%, 0);
+  transition: transform 0.35s ease-out;
+}
+.alert.show { transform: translate3d(0, 0, 0); }
+.alert.redzone { color: #07090f; background: var(--accent); }
+.alert-logo {
+  width: 7vh;
+  height: 7vh;
+  margin-right: 1.5vw;
+  padding: 0.4vh;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 0.6vw;
+}
+.alert-title { font-size: 3.4vw; font-weight: 800; letter-spacing: 0.05em; }
+.alert-text {
+  min-width: 0;
+  margin-left: 2.5vw;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 2.3vw;
+  font-weight: 700;
+}
+.message {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  align-self: center;
+  justify-self: center;
+  font-size: 3vw;
+  color: var(--muted);
+}
+.card {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.2vh 1.2vw;
+  background: var(--card);
+  border: 0.12vw solid var(--card-line);
+  border-radius: 0.8vw;
+}
+.card.live { border-color: var(--live); }
+.card.close { border-color: var(--accent); }
+.close-tag {
+  margin-left: 0.6vw;
+  padding: 0.1vh 0.6vw;
+  border-radius: 0.3vw;
+  font-size: 1.25vw;
+  font-weight: 800;
+  color: #07090f;
+  background: var(--accent);
+}
+.note.redzone { font-weight: 800; color: var(--live); }
+
+.card-top {
+  display: flex;
+  align-items: center;
+  height: 4.4vh;
+  flex: none;
+}
+.tag {
+  padding: 0.1vh 0.6vw;
+  border-radius: 0.3vw;
+  font-size: 1.25vw;
+  font-weight: 800;
+  color: #07090f;
+}
+.tag.NFL { background: var(--nfl); }
+.tag.NBA { background: var(--nba); }
+.tag.MLB { background: var(--mlb); }
+.tag.NCAAF { background: var(--ncaaf); }
+.tag.NCAAB { background: var(--ncaab); }
+
+.state {
+  margin-left: auto;
+  font-size: 1.55vw;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.card.live .state { color: var(--live); }
+.dot {
+  display: inline-block;
+  width: 0.7vw;
+  height: 0.7vw;
+  margin-right: 0.5vw;
+  vertical-align: 0.1vw;
+  border-radius: 50%;
+  background: var(--live);
+}
+
+.team {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+}
+.logo-box {
+  width: 4.8vw;
+  height: 4.8vw;
+  margin-right: 1vw;
+  padding: 0.3vw;
+  flex: none;
+  /* A light backing so dark team logos don't vanish against the dark card. */
+  background: #c3ccda;
+  border-radius: 0.6vw;
+}
+.logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 2.45vw;
+  font-weight: 700;
+}
+.rank {
+  margin-right: 0.5vw;
+  font-size: 1.6vw;
+  color: var(--accent);
+}
+.has-ball::after {
+  content: "\25C0";
+  margin-left: 0.6vw;
+  font-size: 1.2vw;
+  color: var(--accent);
+}
+.score {
+  margin-left: 1vw;
+  flex: none;
+  font-size: 4.1vw;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.record {
+  margin-left: 1vw;
+  flex: none;
+  font-size: 1.7vw;
+  color: var(--muted);
+}
+.flash { animation: flash 1.2s ease-out 3; }
+@keyframes flash {
+  from { color: var(--accent); }
+  to { color: var(--text); }
+}
+
+.card-bottom {
+  display: flex;
+  align-items: center;
+  height: 3.8vh;
+  flex: none;
+  font-size: 1.4vw;
+  color: var(--muted);
+}
+.note {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+.tv { margin-left: 1vw; flex: none; }
+
+/* ----- Scrolling strip ----- */
+.ticker {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 9vh;
+  /* Runs the full width of the screen, past the page padding. */
+  margin: 0 -2vw;
+  background: #10151f;
+  border-top: 0.25vh solid var(--accent);
+}
+.ticker-tag {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  flex: none;
+  padding: 0 1.4vw 0 2vw;
+  font-size: 1.7vw;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #07090f;
+  background: var(--accent);
+}
+.ticker-window {
+  position: relative;
+  flex: 1 1 auto;
+  height: 100%;
+  overflow: hidden;
+}
+.strip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  white-space: nowrap;
+  will-change: transform;
+}
+.item {
+  flex: none;
+  padding: 0 1.6vw;
+  border-right: 0.1vw solid var(--card-line);
+  font-size: 2.1vw;
+  font-weight: 600;
+}
+.item .lg { margin-right: 0.7vw; font-weight: 800; }
+.item .lg.NFL { color: var(--nfl); }
+.item .lg.NBA { color: var(--nba); }
+.item .lg.MLB { color: var(--mlb); }
+.item .lg.NCAAF { color: var(--ncaaf); }
+.item .lg.NCAAB { color: var(--ncaab); }
+.item .pts { margin: 0 0.8vw 0 0.3vw; font-weight: 800; color: var(--accent); }
+.item .when { margin-left: 0.5vw; font-weight: 500; color: var(--muted); }
+.item .when.on { color: var(--live); }
